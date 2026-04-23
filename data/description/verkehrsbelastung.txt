@@ -1,0 +1,131 @@
+
+■ Informationen zu den Daten:
+Das Lkw-Verkehrsportal ist eine nutzerfreundliche Visualisierung von anonymisierten Mautdaten des Bundes für die interessierte Öffentlichkeit.
+Toll Collect und das BALM stellen im Lkw-Verkehrsportal Informationen zur Befahrung des Mautnetzes in Deutschland zur Verfügung.
+Sie können zum Beispiel für die Verkehrsanalyse, -prognose und für die Infrastrukturplanung genutzt werden.
+
+■ Welche Informationen werden gezeigt?
+    · Verkehrsstärken auf Tarifabschnitten des Mautnetzes,
+    · Verkehrsstärken auf Querverbindungen des nicht mautpflichtigen Netzes,
+    · Anzahl von Aus-/Einfahrten sowie Wiedereinfahrten an Mautknoten des mautpflichtigen Netzes
+
+■ Beschreibung der CSV-Dateien:
+Die Benennung der einzelnen Dateien folgt dem Schema: "<Objekt>_<Datum der Tagescheibe>_prc_<Datum der Aufbereitung>_exp_<Datum des Systemexports>.csv"
+Es gibt folgende Objekte mit den jeweils zugehörigen Inhalten:
+
+· Tarifabschnitte
+    · datum: Datum der Tagescheibe (Format YYYY-MM-DD, STRING)
+    · abschnitt_id: ID des Abschnitts (INTEGER)
+    · mautknoten_id_von: ID des Mautknotens, von dem der Abschnitt startet, basierend auf den Koordinaten (STRING)
+    · mautknoten_name_von: Name des Mautknotens, von dem der Abschnitt startet (STRING)
+    · mautknoten_id_nach: ID des Mautknotens, an dem der Abschnitt endet, basierend auf den Koordinaten (STRING)
+    · mautknoten_name_nach: Name des Mautknotens, an dem der Abschnitt endet (STRING)
+    · bundesfernstrasse: Name der Bundesfernstraße (STRING)
+    · anzahl_befahrungen: Anzahl der Befahrungen auf dem Abschnitt für die Tagescheibe (INTEGER)
+    · anzahl_einfahrten: Anzahl der Einfahrten auf den Abschnitt für die Tagescheibe (INTEGER)
+    · anzahl_ausfahrten: Anzahl der Ausfahrten nach dem Abschnitt für die Tagescheibe (INTEGER)
+    · laenge_km: Mauttariflänge (entsprechend der Mauttabelle) des tatsächlichen Straßenverlaufs für den Abschnitt. Entspricht der geometrischen Länge des Straßenverlaufs (DECIMAL)
+    · fahrleistung_km: Fahrleistung als Produkt aus Anzahl der Befahrungen und der Mauttariflänge (DECIMAL)
+    · strassen_typ: Typ der Bundesfernstraße – 0 = Autobahn, 1 = Bundesstraße (DECIMAL)
+    · wkt: Geometrie im LINESTRING-Format (Well-Known Text nach https://www.ogc.org/de/publications/standard/wkt-crs/) in der Projektion WGS84 (EPSG 4326)
+
+· Mautknoten
+    · datum: Datum der Tagescheibe (Format YYYY-MM-DD, STRING)
+    · mautknoten_id: ID des Mautknotens basierend auf den Koordinaten (STRING)
+    · mautknoten_name: Name des Mautknotens (STRING)
+    · bundesfernstrasse: Name der Bundesfernstraße, an der der Mautknoten liegt (STRING)
+    · anzahl_wiedereinfahrten: Anzahl der Wiedereinfahrten am selben Mautknoten für die Tagescheibe (INTEGER)
+    · anzahl_einfahrten: Anzahl der Einfahrten am Mautknoten für die Tagescheibe (INTEGER)
+    · anzahl_ausfahrten: Anzahl der Ausfahrten nach dem Mautknoten für die Tagescheibe (INTEGER)
+    · wkt: Geometrie im POINT-Format (Well-Known Text nach https://www.ogc.org/de/publications/standard/wkt-crs/) in der Projektion WGS84 (EPSG 4326)
+
+· Querverbindungen
+    · datum: Datum der Tagescheibe (Format YYYY-MM-DD, STRING)
+    · mautknoten_id_von: ID des Mautknotens, von dem die Querverbindung startet (STRING)
+    · mautknoten_name_von: Name des Mautknotens, von dem die Querverbindung startet (STRING)
+    · mautknoten_id_nach: ID des Mautknotens, an dem die Querverbindung endet (STRING)
+    · mautknoten_name_nach: Name des Mautknotens, an dem die Querverbindung endet (STRING)
+    · sum_anzahl_querverbindungen: Summe der Querverbindungen mit der Kombination mautknoten_name_von und mautknoten_name_nach (INTEGER)
+    · daten: Array mit Informationen über:
+        · abschnitt_id_von: ID des Ausgangsabschnitts (INTEGER)
+        · abschnitt_id_nach: ID des Zielabschnitts (INTEGER)
+        · bundesfernstrasse_von: Name der Bundesfernstraße, von der die Querverbindung startet (STRING)
+        · bundesfernstrasse_nach: Name der Bundesfernstraße, an der die Querverbindung endet (STRING)
+        · anzahl_querverbindungen: Anzahl der Querverbindungen mit dieser Abschnittskombination (INTEGER)
+        · fahrzeit_min_med: Median der Fahrzeit für die Querverbindung (INTEGER)
+        · fahrzeit_min_mittelw: Mittelwert der Fahrzeit für die Querverbindung (INTEGER)
+        · fahrzeit_min_std: Standardabweichung der Fahrzeit (INTEGER)
+    · wkt: Geometrie im LINESTRING-Format (Well-Known Text nach https://www.ogc.org/de/publications/standard/wkt-crs/) in der Projektion WGS84 (EPSG 4326)
+
+
+■ Wie wird die Anonymisierung sichergestellt?
+Die Mautdaten werden anonymisiert verarbeitet, d. h. sie können nicht auf ein konkretes Fahrzeug zurückgeführt werden.
+Darüber hinaus werden sie im Lkw-Verkehrsportal als Summen dargestellt.
+Hierbei handelt es sich nicht um die genaue Summe der Befahrungen sondern um auf die nächste Zehnerstelle kaufmännisch gerundete Werte.
+Liegen beispielweise vier Befahrungen vor, erscheint der Wert Null.
+Liegen fünf Befahrungen vor, erscheint der Wert zehn. Hierdurch wird eine sogenannte Mindestkohortengröße von Zehn erreicht.
+
+■ Woher kommen die Daten?
+Die Befahrungen bzw. Verkehrsstärken mautpflichtiger Fahrzeuge auf Tarifabschnitten des Bundesfernstraßennetzes werden aus den Erhebungsdaten des Mautsystems Deutschland ermittelt.
+Die Datenbasis ist das Zentrale Informationssystem des BALM, das alle nach dem Bundesfernstraßenmautgesetz (BFStrMG) erfassten Lkw-Fahrten der Kunden von Toll Collect und des European Electronic Toll Service enthält.
+Laut § 9 Abs. 6 BFStrMG dürfen diese Daten für statistische Zwecke sowie für Verkehrsmanagement verwendet werden.
+Grundlage der Visualisierung sind die zum betrachteten Zeitraum gültigen Tarifabschnitte der Mauttabelle.
+
+■ Welche Fahrzeuge sind aktuell mautpflichtig?
+Mautpflichtig sind nach § 1 Bundesfernstraßenmautgesetz alle in- und ausländischen Kraftfahrzeuge oder Fahrzeugkombinationen mit einer technisch zulässigen Gesamtmasse von mehr als 3,5 Tonnen,
+die für den Güterkraftverkehr bestimmt sind oder dafür verwendet werden.
+Bestimmte Fahrzeuge sind nach dem Bundesfernstraßenmautgesetz von der Maut befreit.
+
+■ Was sind Mautknoten und Tarifabschnitte?
+Zur Erhebung der Lkw-Maut ist das Bundesfernstraßennetz in rund 138.000 Tarifabschnitte aufgeteilt, davon entfallen 5.750 Tarifabschnitte auf Autobahnen und die übrigen auf Bundesstraßen (Stand März 2025).
+Tarifabschnitte bilden die atomare Erhebungseinheit im Mautsystem.
+Ein Tarifabschnitt beginnt bzw. endet überall dort, wo in das Mautnetz ein- oder aus ihm ausgefahren werden kann sowie an Kreuzungspunkten von mautpflichtigen Straßen.
+Im Allgemeinen werden diese Orte als Mautknoten bezeichnet.
+Eine abschließende Klassifizierung von Mautknoten ist dem § 3a des BFStrMG zu entnehmen.
+
+■ Wie werden Verkehrsstärken für Querverbindungen ermittelt?
+Querverbindungen bezeichnen bestimmte Strecken des nicht mautpflichten Straßennetzes zwischen zwei Mautknoten.
+Bei den Querverbindungen werden Informationen über Ausfahrtszeitpunkt aus dem Mautnetz und Einfahrtszeitpunkt (Wiedereintritt) in das mautpflichtige Straßennetz herangezogen, um eine nicht mautpflichtige Fahrt zwischen zwei Mautknoten abzuleiten.
+Dabei gilt als Fahrt, wenn sowohl der Austritt als auch der Wiedereintritt ins Mautnetz innerhalb eines Kalendertags stattfand.
+Die genaue Route der Verbindung ist nicht bekannt, deshalb werden nur Luftlinienverbindungen visualisiert.
+Aus technischen Gründen wird das Ende einer Mautfahrt (die Ausfahrt) nicht exakt am Mautknoten gebildet, sondern mit zeitlichem bzw. räumlichem Versatz.
+Die Angaben zur Fahrzeit zwischen den Mautknoten sind daher nur als Näherungswerte zu verstehen.
+Es ist möglich, dass potenziell sehr kurze Querverbindungen nicht identifiziert werden können.
+
+■ Wie definiert sich eine Wiedereinfahrt?
+Wiedereinfahrten werden analog zu Querverbindungen ermittelt.
+Im Unterschied zur Querverbindung findet jedoch die Ausfahrt und der Wiedereintritt am selben Mautknoten statt.
+
+■ Wie wird die Fahrleistung berechnet?
+Die Fahrleistung gibt an, wie viele Kilometer Fahrzeuge innerhalb eines bestimmten Zeitraums insgesamt zurücklegen.
+Sie ergibt sich aus der Länge eines Tarifabschnitts multipliziert mit der Anzahl der Befahrungen.
+Beispiel: Ein Abschnitt mit 2,0 km Länge und 2.000 Befahrungen ergibt eine Fahrleistung von 4.000 km an diesem Tag.
+Fahrzeiten bei Querverbindungen sind verkehrsabhängig und daher nur als grobe Richtwerte zu verstehen.
+
+■ Wie kann ich die Daten verwenden?
+Die Nutzung erfolgt gemäß „Datenlizenz Deutschland – Namensnennung – Version 2.0“. Als Quelle ist das Bundesamt für Logistik und Mobilität zu nennen.
+
+■ Limitierungen der Daten und Datenaufbereitung:
+    · Daten von nicht mautpflichtigen oder von der Mautpflicht befreiten Fahrzeugen liegen nicht vor.
+    · Es werden nur Befahrungen auf mautpflichtigen Strecken erfasst.
+    . Den Daten liegt eine Erfassungsquote bei der Mauterhebung zugrunde, die bei Toll Collect für das Gesamtnetz seit Jahren über 99,9 Prozent liegt. Erhobene Daten können.
+      Erhobene Daten können aus methodischen Gründen von der tatsächlichen Befahrung abweichen.
+      Die angegebene Anzahl von Ein- und Ausfahrten an Mautknoten kann aufgrund von erhebungstechnisch bedingten Unterbrechungen von technischen Mautfahrten (im Unterschied zu Fahrtunterbrechungen im Sinne von logistischen Stopps oder Lenkzeitpausen) überrepräsentiert sein.
+    . Den Daten liegt eine Erfassungsquote bei der Mauterhebung zugrunde, die bei Toll Collect für das Gesamtnetz seit Jahren über 99,9 Prozent liegt. Erhobene Daten können. Erhobene Daten können aus methodischen Gründen von der tatsächlichen Befahrung abweichen. Die angegebene Anzahl von Ein- und Ausfahrten an Mautknoten kann aufgrund von erhebungstechnisch bedingten Unterbrechungen von technischen Mautfahrten (im Unterschied zu Fahrtunterbrechungen im Sinne von logistischen Stopps oder Lenkzeitpausen) überrepräsentiert sein.
+    · Aus Datenschutz- und Statistikgründen sind alle Werte auf die nächste Zehnerstelle gerundet. Werte unter 5 Lkw/Tag erscheinen als 0.
+
+■ Beschränkte Gewährleistung und Haftung:
+Die Daten werden entsprechend der technischen Rahmenbedingungen bereitgestellt, die sich aus der oben beschriebenen Methodik und den technischen Gegebenheiten ergeben.
+Die Daten werden ohne Gewährleistung oder Haftung für die Richtigkeit, Vollständigkeit, Aktualität oder für eine bestimmte Verwendung bereitgestellt.
+
+■ Herausgeber:
+Toll Collect GmbH 2026
+Linkstraße 4
+10785 Berlin
+Kontakt: verkehrsportal@toll-collect.de
+
+■ Datengrundlagen
+Zentrales Informationssystem des Bundesamts für Logistik und Mobilität
+Werderstr. 34
+50672 Köln
+
